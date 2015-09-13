@@ -1,83 +1,109 @@
 package gb2260
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
+// Division 地区
 type Division struct {
-	Code string
-	Name string
-	Year string
+	Code string // The six-digit number of the specific administrative division.
+	Name string // The Chinese name of the specific administrative division.
+	Year string // Optional. The revision year, and empty means "latest".
 }
 
 var (
-	EMPTY_DIVISION Division
+	_EmptyDivision Division
 )
 
-func (this Division) Province() Division {
-	code := this.Code[0:2] + "0000"
+// Province 省份
+func (div Division) Province() Division {
+	code := div.Code[0:2] + "0000"
 	return Get(code)
 }
 
-func (this Division) Prefecture() Division {
-	if this.IsProvince() {
-		return EMPTY_DIVISION
+// Prefecture 地区
+func (div Division) Prefecture() Division {
+	if div.IsProvince() {
+		return _EmptyDivision
 	}
 
-	code := this.Code[:4] + "00"
+	code := div.Code[:4] + "00"
 	return Get(code)
 }
 
-func (this Division) Country() Division {
-	if this.IsProvince() || this.IsPrefecture() {
-		return EMPTY_DIVISION
+// Country 县
+func (div Division) Country() Division {
+	if div.IsProvince() || div.IsPrefecture() {
+		return _EmptyDivision
 	}
-	return this
+	return div
 }
 
-func (this Division) IsProvince() bool {
-	return this.Province() == this
+// Description 描述
+func (div Division) Description() string {
+	stack := div.Stack()
+	var names []string
+	names = make([]string, 0)
+
+	for _, s := range stack {
+		names = append(names, s.Name)
+	}
+
+	return strings.Join(names, " ")
 }
 
-func (this Division) IsPrefecture() bool {
-	return this.Prefecture() == this
+// IsProvince 是否省份
+func (div Division) IsProvince() bool {
+	return div.Province() == div
 }
 
-func (this Division) IsCountry() bool {
-	return this.Country() != EMPTY_DIVISION
+// IsPrefecture 是否地区
+func (div Division) IsPrefecture() bool {
+	return div.Prefecture() == div
 }
 
-func (this Division) Stack() []Division {
-	stacks := make([]Division, 0)
+// IsCountry 是否县
+func (div Division) IsCountry() bool {
+	return div.Country() != _EmptyDivision
+}
 
-	province := this.Province()
+// Stack 省，地区，县
+func (div Division) Stack() []Division {
+	var stacks []Division
+	stacks = make([]Division, 0)
+
+	province := div.Province()
 	stacks = append(stacks, province)
 
-	if this.IsPrefecture() || this.IsCountry() {
-		prefecture := this.Prefecture()
+	if div.IsPrefecture() || div.IsCountry() {
+		prefecture := div.Prefecture()
 		stacks = append(stacks, prefecture)
 	}
 
-	if this.IsCountry() {
-		stacks = append(stacks, this)
+	if div.IsCountry() {
+		stacks = append(stacks, div)
 	}
 
 	return stacks
 }
 
+// Get 获取Division
 func Get(code string) Division {
 	key, err := strconv.Atoi(code)
 	if err != nil {
-		return EMPTY_DIVISION
+		return _EmptyDivision
 	}
 
 	div, ok := divisions[key]
 	if !ok {
-		return EMPTY_DIVISION
+		return _EmptyDivision
 	}
 
 	return div
 }
 
-// not implemenet
+// Search not implemenet
 func Search(code string) *Division {
 	return nil
 }

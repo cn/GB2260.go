@@ -7,7 +7,12 @@ import (
 
 func Test_DivisionCountry(t *testing.T) {
 	// 110101 北京市/市辖区/东城区
-	division := Get("110101")
+	gb := NewGB2260("")
+
+	division := gb.Get("110101")
+	if division == nil {
+		t.Error("division not exist")
+	}
 
 	if division.IsProvince() {
 		t.Error("expect not province, got province")
@@ -21,7 +26,7 @@ func Test_DivisionCountry(t *testing.T) {
 		t.Error("expect country, got not country")
 	}
 
-	names := make([]string, 0)
+	var names []string
 	stacks := division.Stack()
 	for _, div := range stacks {
 		names = append(names, div.Name)
@@ -35,7 +40,11 @@ func Test_DivisionCountry(t *testing.T) {
 
 func Test_DivisionPrefecture(t *testing.T) {
 	// 110100 北京市/市辖区
-	division := Get("110100")
+	gb := NewGB2260("")
+	division := gb.Get("110100")
+	if division == nil {
+		t.Error("division not exist")
+	}
 
 	if division.IsProvince() {
 		t.Error("expect not province, got province")
@@ -49,7 +58,7 @@ func Test_DivisionPrefecture(t *testing.T) {
 		t.Error("expect not country, got country")
 	}
 
-	names := make([]string, 0)
+	var names []string
 	stacks := division.Stack()
 	for _, div := range stacks {
 		names = append(names, div.Name)
@@ -64,7 +73,11 @@ func Test_DivisionPrefecture(t *testing.T) {
 
 func Test_DivisionProvince(t *testing.T) {
 	// 110000 北京市
-	division := Get("110000")
+	gb := NewGB2260("")
+	division := gb.Get("110000")
+	if division == nil {
+		t.Error("division not exist")
+	}
 
 	if !division.IsProvince() {
 		t.Error("expect province, got not province")
@@ -78,7 +91,7 @@ func Test_DivisionProvince(t *testing.T) {
 		t.Error("expect not country, got country")
 	}
 
-	names := make([]string, 0)
+	var names []string
 	stacks := division.Stack()
 	for _, div := range stacks {
 		names = append(names, div.Name)
@@ -92,12 +105,62 @@ func Test_DivisionProvince(t *testing.T) {
 
 func Test_Compare(t *testing.T) {
 	div := Division{Code: "110101", Name: "东城区", Year: "2014"}
-	if Get("110101") != div {
+	gb := NewGB2260("")
+
+	p := gb.Get("110101")
+	if p == nil {
+		t.Error("division not exist")
+	}
+
+	if !p.Equal(div) {
 		t.Error("expect equal division, got not equal")
 	}
 
 	div = Division{Code: "110000", Name: "东城区", Year: "2014"}
-	if Get("110101") == div {
+	p = gb.Get("110101")
+	if p == nil {
+		t.Error("division not exist")
+	}
+
+	if p.Equal(div) {
 		t.Error("expect not equal division, go equal")
+	}
+}
+
+func Test_Provinces(t *testing.T) {
+	gb := NewGB2260("")
+	p := gb.Provinces()
+	if p == nil {
+		t.Error("provinces is nil")
+	}
+
+	if len(p) != 34 {
+		t.Error("expect provinces length 34, but not")
+	}
+}
+
+func Test_Prefectures(t *testing.T) {
+	gb := NewGB2260("")
+
+	prefectures := gb.Prefectures("110101")
+	if prefectures == nil {
+		t.Error("prefectures is nil")
+	}
+
+	if len(prefectures) != 2 {
+		t.Error("expect prefectures length 2, but not")
+	}
+}
+
+func Test_Counties(t *testing.T) {
+	gb := NewGB2260("")
+
+	countries := gb.Counties("110101")
+	if countries == nil {
+		t.Error("prefectures is nil")
+	}
+
+	if len(countries) != 14 {
+		t.Error("expect counties length 14, but not")
 	}
 }

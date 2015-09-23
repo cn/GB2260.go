@@ -43,6 +43,19 @@ func (g GB2260) Get(code string) *Division {
 	}
 }
 
+// Search Division
+func Search(code string, years []string) *Division {
+	for _, year := range years {
+		gb := NewGB2260(year)
+		division := gb.Get(code)
+		if division != nil {
+			return division
+		}
+	}
+
+	return nil
+}
+
 // Provinces Return a list of provinces in Division data structure.
 func (g GB2260) Provinces() []*Division {
 	var divisions []*Division

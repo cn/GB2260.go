@@ -6,6 +6,6 @@ go:
   - tip
 
 install:
-  - go build -v ./cmd/
+  - go build -v github.com/damonchen/gb2260/cmd
 
 script: ./cmd/generate.go && go test -v ./...

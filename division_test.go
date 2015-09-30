@@ -104,7 +104,7 @@ func Test_DivisionProvince(t *testing.T) {
 }
 
 func Test_Compare(t *testing.T) {
-	div := Division{Code: "110101", Name: "东城区", Year: "2014"}
+	div := Division{Code: "110101", Name: "东城区", Revision: "2014"}
 	gb := NewGB2260("")
 
 	p := gb.Get("110101")
@@ -116,7 +116,7 @@ func Test_Compare(t *testing.T) {
 		t.Error("expect equal division, got not equal")
 	}
 
-	div = Division{Code: "110000", Name: "东城区", Year: "2014"}
+	div = Division{Code: "110000", Name: "东城区", Revision: "2014"}
 	p = gb.Get("110101")
 	if p == nil {
 		t.Error("division not exist")

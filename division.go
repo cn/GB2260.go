@@ -8,24 +8,34 @@ import (
 
 // GB2260 GB2260
 type GB2260 struct {
-	Store map[string]string
-	Year  string
+	Store    map[string]string
+	Revision string
 }
 
 var (
 	_LatestYear = "2014"
 )
 
-// NewGB2260 If year is not specified, use the latest data.
-func NewGB2260(year string) GB2260 {
-	if year == "" {
-		year = _LatestYear
+// NewGB2260 If revision is not specified, use the latest data.
+func NewGB2260(revision string) GB2260 {
+	if revision == "" {
+		revision = _LatestYear
 	}
 
 	return GB2260{
-		Store: divisions[year],
-		Year:  year,
+		Store:    divisions[revision],
+		Revision: revision,
 	}
+}
+
+func Revisions() []string {
+	var revisions []string
+
+	for revision, _ := range divisions {
+		revisions = append(revisions, revision)
+	}
+
+	return revisions
 }
 
 // Get Obtain Division
@@ -36,17 +46,17 @@ func (g GB2260) Get(code string) *Division {
 	}
 
 	return &Division{
-		Code: code,
-		Name: name,
-		Year: g.Year,
-		gb:   g,
+		Code:     code,
+		Name:     name,
+		Revision: g.Revision,
+		gb:       g,
 	}
 }
 
 // Search Division
-func Search(code string, years []string) *Division {
-	for _, year := range years {
-		gb := NewGB2260(year)
+func Search(code string, revisions []string) *Division {
+	for _, revision := range revisions {
+		gb := NewGB2260(revision)
 		division := gb.Get(code)
 		if division != nil {
 			return division
@@ -63,10 +73,10 @@ func (g GB2260) Provinces() []*Division {
 	for code, name := range g.Store {
 		if strings.HasSuffix(code, "0000") {
 			d := &Division{
-				Code: code,
-				Name: name,
-				Year: g.Year,
-				gb:   g,
+				Code:     code,
+				Name:     name,
+				Revision: g.Revision,
+				gb:       g,
 			}
 
 			divisions = append(divisions, d)
@@ -98,10 +108,10 @@ func (g GB2260) Prefectures(provinceCode string) []*Division {
 	for code, name := range g.Store {
 		if prefecutres.MatchString(code) && code != realProvinceCode {
 			d := Division{
-				Code: code,
-				Name: name,
-				Year: g.Year,
-				gb:   g,
+				Code:     code,
+				Name:     name,
+				Revision: g.Revision,
+				gb:       g,
 			}
 			divisions = append(divisions, &d)
 		}
@@ -131,10 +141,10 @@ func (g GB2260) Counties(prefectureCode string) []*Division {
 	for code, name := range g.Store {
 		if country.MatchString(code) && code != realPrefectureCode {
 			d := Division{
-				Code: code,
-				Name: name,
-				Year: g.Year,
-				gb:   g,
+				Code:     code,
+				Name:     name,
+				Revision: g.Revision,
+				gb:       g,
 			}
 			divisions = append(divisions, &d)
 		}
@@ -145,19 +155,19 @@ func (g GB2260) Counties(prefectureCode string) []*Division {
 
 // Division 地区
 type Division struct {
-	Code string `json:"code"` // The six-digit number of the specific administrative division.
-	Name string `json:"name"` // The Chinese name of the specific administrative division.
-	Year string `json:"year"` // Optional. The revision year, and empty means "latest".
-	gb   GB2260
+	Code     string `json:"code"`     // The six-digit number of the specific administrative division.
+	Name     string `json:"name"`     // The Chinese name of the specific administrative division.
+	Revision string `json:"revision"` // Optional. The revision year, and empty means "latest".
+	gb       GB2260
 }
 
 func (div Division) String() string {
-	return fmt.Sprintf("code:%s, name:%s, year:%s", div.Code, div.Name, div.Year)
+	return fmt.Sprintf("code:%s, name:%s, revision:%s", div.Code, div.Name, div.Revision)
 }
 
 // Equal use hash to compare equal
 func (div Division) Equal(other Division) bool {
-	return div.Code == other.Code && div.Name == other.Name && div.Year == other.Year
+	return div.Code == other.Code && div.Name == other.Name && div.Revision == other.Revision
 }
 
 // Province 省份

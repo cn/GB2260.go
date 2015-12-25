@@ -13,6 +13,10 @@ Get the code:
 ```go
 go get github.com/cn/GB2260.go
 ```
+or
+```go
+go get github.com/damonchen/gb2260
+```
 
 ## Usage
 
@@ -20,6 +24,8 @@ go get github.com/cn/GB2260.go
     
 import (
     gb2260 "github.com/cn/GB2260.go"
+    // or
+    // gb2260 "github.com/damonchen/gb2660"
 )
 
 division := gb2260.Get("360426")

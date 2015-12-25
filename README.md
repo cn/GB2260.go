@@ -28,7 +28,8 @@ import (
     // gb2260 "github.com/damonchen/gb2660"
 )
 
-division := gb2260.Get("360426")
+gb := gb2260.NewGB2260("")
+division := gb.Get("360426")
 
 ```
 

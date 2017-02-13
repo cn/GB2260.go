@@ -38,4 +38,4 @@ division := gb.Get("360426")
 
 ## Spec:
 
-https://github.com/cn/GB2260/blob/api-design/spec.md
+https://github.com/cn/GB2260/blob/develop/spec.md

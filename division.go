@@ -13,17 +13,17 @@ type GB2260 struct {
 }
 
 var (
-	_LatestYear = "2014"
+	_LatestRevision = "201904"
 )
 
 // NewGB2260 If revision is not specified, use the latest data.
 func NewGB2260(revision string) GB2260 {
 	if revision == "" {
-		revision = _LatestYear
+		revision = _LatestRevision
 	}
 
 	return GB2260{
-		Store:    divisions[revision],
+		Store:    Divisions[revision],
 		Revision: revision,
 	}
 }
@@ -31,7 +31,7 @@ func NewGB2260(revision string) GB2260 {
 func Revisions() []string {
 	var revisions []string
 
-	for revision, _ := range divisions {
+	for revision, _ := range Divisions {
 		revisions = append(revisions, revision)
 	}
 

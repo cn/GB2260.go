@@ -39,9 +39,9 @@ func Test_DivisionCountry(t *testing.T) {
 }
 
 func Test_DivisionPrefecture(t *testing.T) {
-	// 110100 北京市/市辖区
+	// 110101 北京市/东城区
 	gb := NewGB2260("")
-	division := gb.Get("110100")
+	division := gb.Get("110101")
 	if division == nil {
 		t.Error("division not exist")
 	}
@@ -65,8 +65,8 @@ func Test_DivisionPrefecture(t *testing.T) {
 	}
 
 	stackName := strings.Join(names, "/")
-	if stackName != "北京市/市辖区" {
-		t.Error("export 北京市/市辖区, got ", stackName)
+	if stackName != "北京市/东城区" {
+		t.Error("export 北京市/东城区, got ", stackName)
 	}
 
 }

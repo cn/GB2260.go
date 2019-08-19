@@ -98,7 +98,7 @@ func (g GB2260) Prefectures(provinceCode string) []*Division {
 	var divisions []*Division
 	province := provinceCode[:2]
 
-	prefecutres, err := regexp.Compile(province + "\\d{2}" + "00$")
+	prefecutres, err := regexp.Compile(fmt.Sprintf(`%s\d{4}`, province))
 	if err != nil {
 		return nil
 	}
@@ -131,7 +131,7 @@ func (g GB2260) Counties(prefectureCode string) []*Division {
 	prefecutre := prefectureCode[:4]
 
 	var divisions []*Division
-	country, err := regexp.Compile(prefecutre + "\\d{2}$")
+	country, err := regexp.Compile(fmt.Sprintf(`%s\d{2}`, prefecutre))
 	if err != nil {
 		return nil
 	}

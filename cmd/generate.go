@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,15 +23,14 @@ func getNameSuffix(currentSource string) string {
 	return ""
 }
 
-func generateFileData(year int, fileName string) (string, error) {
-	content, err := ioutil.ReadFile(fileName)
+func generateFileData(fileName string) (string, error) {
+	file, err := os.Open(fileName)
 	if err != nil {
 		return "", err
 	}
 
 	divisions := "map[string]string{"
-
-	buff := bytes.NewBuffer(content)
+	buff := bufio.NewReader(file)
 	for {
 		line, err := buff.ReadString('\n')
 		if err != nil {
@@ -43,6 +41,9 @@ func generateFileData(year int, fileName string) (string, error) {
 
 		lineScanner := bufio.NewScanner(strings.NewReader(line))
 		lineScanner.Split(bufio.ScanWords)
+		lineScanner.Scan()
+		lineScanner.Scan()
+
 		lineScanner.Scan()
 		code := lineScanner.Text()
 
@@ -58,16 +59,16 @@ func generateFileData(year int, fileName string) (string, error) {
 
 // before use it, you should use go build and then execute the generate (or generate.exe)
 func main() {
-	dir := "../data/"
-	years := []int{2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014}
+	dir := "../data/mca/"
+	names := []int{201904}
 
 	gocode := `package gb2260
 var (
-	divisions map[string]map[string]string
+	Divisions map[string]map[string]string
 )
 
 func init(){
-	divisions = map[string]map[string]string{
+	Divisions = map[string]map[string]string{
 		%s
 	}
 }
@@ -75,16 +76,16 @@ func init(){
 
 	code := ""
 
-	for _, y := range years {
-		fileName := dir + fmt.Sprintf("GB2260-%d.txt", y)
+	for _, n := range names {
+		fileName := dir + fmt.Sprintf("%d.tsv", n)
 
-		data, err := generateFileData(y, fileName)
+		data, err := generateFileData(fileName)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 
-		code += fmt.Sprintf("\"%d\": %s,\n", y, data)
+		code += fmt.Sprintf("\"%d\": %s,\n", n, data)
 	}
 
 	gocode = fmt.Sprintf(gocode, code)

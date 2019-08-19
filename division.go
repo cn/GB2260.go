@@ -13,17 +13,17 @@ type GB2260 struct {
 }
 
 var (
-	_LatestYear = "2014"
+	_LatestRevision = "201904"
 )
 
 // NewGB2260 If revision is not specified, use the latest data.
 func NewGB2260(revision string) GB2260 {
 	if revision == "" {
-		revision = _LatestYear
+		revision = _LatestRevision
 	}
 
 	return GB2260{
-		Store:    divisions[revision],
+		Store:    Divisions[revision],
 		Revision: revision,
 	}
 }
@@ -31,7 +31,7 @@ func NewGB2260(revision string) GB2260 {
 func Revisions() []string {
 	var revisions []string
 
-	for revision, _ := range divisions {
+	for revision, _ := range Divisions {
 		revisions = append(revisions, revision)
 	}
 
@@ -98,7 +98,7 @@ func (g GB2260) Prefectures(provinceCode string) []*Division {
 	var divisions []*Division
 	province := provinceCode[:2]
 
-	prefecutres, err := regexp.Compile(province + "\\d{2}" + "00$")
+	prefecutres, err := regexp.Compile(fmt.Sprintf(`%s\d{4}`, province))
 	if err != nil {
 		return nil
 	}
@@ -131,7 +131,7 @@ func (g GB2260) Counties(prefectureCode string) []*Division {
 	prefecutre := prefectureCode[:4]
 
 	var divisions []*Division
-	country, err := regexp.Compile(prefecutre + "\\d{2}$")
+	country, err := regexp.Compile(fmt.Sprintf(`%s\d{2}`, prefecutre))
 	if err != nil {
 		return nil
 	}
